@@ -24,9 +24,18 @@ function Line(ctx) {
     }
 }
 
+function drawRectangle(mouseX,mouseY){
+    var width=mouseX-startX;
+    var height=mouseY-startY;
+    ctx.beginPath();
+    ctx.rect(startX,startY,width,height);
+    ctx.fill();
+    ctx.stroke();
+}
+
 
 img.onload = start;
-img.src = 'img/hardlight-suit.png';
+img.src    = 'img/hardlight-suit.png';
 
 function start() {
     ctx.drawImage(img, 0, 0, demo.width, demo.height);
@@ -45,4 +54,30 @@ function updateLine(e) {
     line.x2 = x;
     line.y2 = canvas.height;
     line.draw();
+}
+
+
+
+
+// Debug functions
+canvas.addEventListener('mousemove', function(evt) {
+    var mousePos = getMousePos(canvas, evt);
+    var message  = 'X: ' + Number(mousePos.x.toFixed(0)) + ', Y: ' +Number(mousePos.y.toFixed(0));
+    writeMessage(canvas, message);
+}, false);
+
+function writeMessage(canvas, message) {
+    var context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.font = '18pt Calibri';
+    context.fillStyle = 'black';
+    context.fillText(message, 10, 25);
+};
+
+function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    }
 }
