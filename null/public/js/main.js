@@ -1,13 +1,41 @@
 "use strict"; 
 window.onload = function() {
-    var canvas = document.getElementById('canvas'),
-        ctx = canvas.getContext('2d'),
-        line = new Line(ctx),
-        img = new Image;
+    var canvas          = document.getElementById('canvas'),
+        ctx             = canvas.getContext('2d'),
+        line            = new Line(ctx),
+        img             = new Image;
         ctx.strokeStyle = '#fff';
+        img.onload      = start;
+        img.src         = 'img/hardlight-suit.png';
+
+    // Called once during init
+    function start() {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        drawRect(ctx);
+        canvas.onmousemove = updateLine;
+    };
+
+   // Starting loc (top-left) when drawing the rectangle
+   var rectCoords = [
+        this.one = {
+            x: 415,
+            y: 140
+        },
+        this.two = {
+            x: 269,
+            y: 138 
+        }
+    ];
 
 
-    function drawRect(ctx){
+    rectCoords.forEach(function(i) {
+        drawRect(ctx, i.x, i.y);
+        console.log("x: "+ i.x);
+        console.log("y: " + i.y);
+    }, this);
+
+
+    function drawRect(ctx, startX, startY){
         var startX = 269;
         var startY = 138;
         var width  = 40;
@@ -36,15 +64,9 @@ window.onload = function() {
         }
     };
 
-    img.onload = start;
-    img.src    = 'img/hardlight-suit.png';
 
-    function start() {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        drawRect(ctx);
-        canvas.onmousemove = updateLine;
-    };
 
+    // Called each time the mouse moves
     function updateLine(e) {
         var r = canvas.getBoundingClientRect(),
             x = e.clientX - r.left,
@@ -52,7 +74,7 @@ window.onload = function() {
         
         // LOOK HERE
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-         drawRect(ctx);
+        drawRect(ctx);
 
         line.x1 = x;
         line.y1 = 0;
