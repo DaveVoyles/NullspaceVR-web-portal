@@ -4,127 +4,109 @@ window.onload = function() {
         ctx             = canvas.getContext('2d'),
         line            = new Line(ctx),
         img             = new Image;
-        ctx.strokeStyle = '#fff';
-        img.onload      = start;
+        ctx.strokeStyle = '#fff'; // white
+        img.onload      = start;  // Start app after image loads
         img.src         = 'img/hardlight-suit.png';
 
-    // Called once during init
-    function start() {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        drawRect(ctx);
-        canvas.onmousemove = updateLine;
-    };
+    /**
+     * Called once during init to set up drawing.
+     * Update the debug boxes when user moves the mouse */
+function start() {
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+     drawRect(ctx); //TODO; Can probably remove this
+    canvas.onmousemove = updateLine;
+};
 
-   /**
-    * Starting loc (top-left) when drawing the rectangle.
-    * Crearte an object to store all of the rectangles here.
-    */
-   var rectCoords = [
-        this.one = {
-            num: "one",
-            x: 400,
-            y: 140
-        },
-        this.two = {
-            num: "two",
-            x: 300,
-            y: 138 
-        },
-        this.three = {
-            x: 300,
-            y: 274,
-        },
-        this.four = {
-            x: 400,
-            y: 274,
-        },
-        this.five = {
-            x: 300,
-            y: 338,
-        },
-        this.six = {
-            x: 400,
-            y: 342,
-        },
-        this.seven = {
-            x: 300,
-            y: 418,
-        },
-        this.eight = {
-            x: 400,
-            y: 342,
-        },
-        this.eight = {
-            x: 400,
-            y: 418,
-        },
-        // Shoulders
-        this.nine = {
-            x: 153,
-            y: 30,
-        },
-        this.ten = {
-            x: 400,
-            y: 30,
-        },
-        // Arms
-        this.eleven = {
-            x: 36,
-            y: 179,
-        },
-        this.twelve = {
-            x: 520,
-            y: 179,
-        },
-        this.thirteen = {
-            x: 13,
-            y: 422,
-        },
-        this.thirteen = {
-            x: 560,
-            y: 386,
-        },
-    ];
-
-
-    /** Loop through each set of rectangle coordinates and draw them to the screen.
-     */
-    // rectCoords.forEach(function(i) {
-    //     drawRect(ctx, i.x, i.y);
-    //     console.log('num: ' + i.num);
-    //     console.log("x: " + i.x);
-    //     console.log("y: " + i.y);
-    // }, this);
+/**
+* Starting loc (top-left) when drawing the rectangle.
+* Crearte an object to store all of the rectangles here.
+*/
+var rectCoords = [
+    this.one = {
+        x: 400,
+        y: 140,
+        bWorking: false,
+        boxColor: 'red'
+    },
+    this.two = {
+        x: 300,
+        y: 138,
+        bWorking: true,
+        boxColor: 'green' 
+    },
+    // this.three = {
+    //     x: 300,
+    //     y: 274,
+    // },
+    // this.four = {
+    //     x: 400,
+    //     y: 274,
+    // },
+    // this.five = {
+    //     x: 300,
+    //     y: 338,
+    // },
+    // this.six = {
+    //     x: 400,
+    //     y: 342,
+    // },
+    // this.seven = {
+    //     x: 300,
+    //     y: 418,
+    // },
+    // this.eight = {
+    //     x: 400,
+    //     y: 342,
+    // },
+    // this.eight = {
+    //     x: 400,
+    //     y: 418,
+    // },
+    // // Shoulders
+    // this.nine = {
+    //     x: 153,
+    //     y: 30,
+    // },
+    // this.ten = {
+    //     x: 400,
+    //     y: 30,
+    // },
+    // // Arms
+    // this.eleven = {
+    //     x: 36,
+    //     y: 179,
+    // },
+    // this.twelve = {
+    //     x: 520,
+    //     y: 179,
+    // },
+    // this.thirteen = {
+    //     x: 13,
+    //     y: 422,
+    // },
+    // this.thirteen = {
+    //     x: 560,
+    //     y: 386,
+    // }
+];
 
 
-
-        function drawRect(ctx, startXLoc, startYLoc){
-        var startX = startXLoc;
-        var startY = startYLoc;
+    function drawRect(ctx, startX, startY, bWorking, boxColor){
         var width  = 40;
         var height = 40;
 
         ctx.beginPath();
         ctx.rect(startX, startY, width, height);
-        ctx.fillStyle = "green";
+        
+        // Change color of rect, based on whether sensor is working (active)
+        if (bWorking === true) {
+            ctx.fillStyle = "green";
+        } else if (bWorking === false) {
+            ctx.fillStyle = "red";
+        }
         ctx.fill();
         ctx.stroke();
     };
-
-
-    // OLD FUNCTION - Hardcoded values
-    // function drawRect(ctx, startX, startY){
-    //     var startX = 269;
-    //     var startY = 138;
-    //     var width  = 40;
-    //     var height = 40;
-
-    //     ctx.beginPath();
-    //     ctx.rect(startX, startY, width, height);
-    //     ctx.fillStyle = "green";
-    //     ctx.fill();
-    //     ctx.stroke();
-    // };
 
     function Line(ctx) {   
         var me = this;
@@ -156,10 +138,11 @@ window.onload = function() {
 
         //TODO: Don't loop through this every frame. Do it only once
         rectCoords.forEach(function(i) {
-            drawRect(ctx, i.x, i.y);
-            console.log('num: ' + i.num);
-            console.log("x: " + i.x);
-            console.log("y: " + i.y);
+            drawRect(ctx, i.x, i.y, i.bWorking, i.boxColor);
+            console.log('rectCoords forEach bWorking :' + i.bWorking);
+            // console.log('num: ' + i.num);
+            // console.log("x: " + i.x);
+            // console.log("y: " + i.y);
         }, this);
 
         line.x1 = x;
@@ -179,7 +162,6 @@ window.onload = function() {
     }, false);
 
     function writeMessage(canvas, message) {
-        // ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.font      = '18pt Calibri';
         ctx.fillStyle = 'black';
