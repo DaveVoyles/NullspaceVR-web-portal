@@ -11,6 +11,14 @@ Real portal to view real-time diagnostics on the suit
 
 ![overview](https://github.com/DaveVoyles/NullspaceVR-web-portal/blob/master/null/public/img/suit-overview.jpg)
 
+## Instructions
+Navigate to */null* directory. In the console, type:
+
+```
+npm install
+nodemon app
+```
+
 ----------
 
 ## Change Log
