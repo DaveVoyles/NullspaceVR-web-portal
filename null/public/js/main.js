@@ -22,135 +22,135 @@ function start() {
 * Crearte an object to store all of the rectangles here.
 */
 var rectCoords = [
+    // Torso
     this.one = {
         x: 400,
         y: 140,
-        bWorking: false,
-        boxColor: 'red'
+        bWorking: false
     },
     this.two = {
         x: 300,
         y: 138,
-        bWorking: true,
-        boxColor: 'green' 
+        bWorking: true
     },
-    // this.three = {
-    //     x: 300,
-    //     y: 274,
-    // },
-    // this.four = {
-    //     x: 400,
-    //     y: 274,
-    // },
-    // this.five = {
-    //     x: 300,
-    //     y: 338,
-    // },
-    // this.six = {
-    //     x: 400,
-    //     y: 342,
-    // },
-    // this.seven = {
-    //     x: 300,
-    //     y: 418,
-    // },
-    // this.eight = {
-    //     x: 400,
-    //     y: 342,
-    // },
-    // this.eight = {
-    //     x: 400,
-    //     y: 418,
-    // },
-    // // Shoulders
-    // this.nine = {
-    //     x: 153,
-    //     y: 30,
-    // },
-    // this.ten = {
-    //     x: 400,
-    //     y: 30,
-    // },
-    // // Arms
-    // this.eleven = {
-    //     x: 36,
-    //     y: 179,
-    // },
-    // this.twelve = {
-    //     x: 520,
-    //     y: 179,
-    // },
-    // this.thirteen = {
-    //     x: 13,
-    //     y: 422,
-    // },
-    // this.thirteen = {
-    //     x: 560,
-    //     y: 386,
-    // }
+    this.three = {
+        x: 300,
+        y: 274,
+    },
+    this.four = {
+        x: 400,
+        y: 274,
+    },
+    this.five = {
+        x: 300,
+        y: 338,
+    },
+    this.six = {
+        x: 400,
+        y: 342,
+    },
+    this.seven = {
+        x: 300,
+        y: 418,
+    },
+    this.eight = {
+        x: 400,
+        y: 342,
+    },
+    this.eight = {
+        x: 400,
+        y: 418,
+    },
+    // Shoulders
+    this.nine = {
+        x: 153,
+        y: 30,
+    },
+    this.ten = {
+        x: 400,
+        y: 30,
+    },
+    // Arms
+    this.eleven = {
+        x: 36,
+        y: 179,
+    },
+    this.twelve = {
+        x: 520,
+        y: 179,
+    },
+    this.thirteen = {
+        x: 13,
+        y: 422,
+    },
+    this.thirteen = {
+        x: 560,
+        y: 386,
+    }
 ];
 
 
-    function drawRect(ctx, startX, startY, bWorking, boxColor){
-        var width  = 40;
-        var height = 40;
+/**Draws debug rectangles and paints based on whether sensor is working or not */
+function drawRect(ctx, startX, startY, bWorking){
+    var width  = 40;
+    var height = 40;
+    if (bWorking == undefined){bWorking = false;}
 
+    ctx.beginPath();
+    ctx.rect(startX, startY, width, height);
+
+    if (bWorking === true) {
+        ctx.fillStyle = "green";
+    } else if (bWorking === false) {
+        ctx.fillStyle = "red";
+    }
+    ctx.fill();
+    ctx.stroke();
+};
+
+
+/** Draws a line to the screen for debig coordinates */
+function Line(ctx) {   
+    var me = this;
+    
+    this.x1 = 0;
+    this.x2 = 0;
+    this.y1 = 0;
+    this.y2 = 0;
+    
+    this.draw = function() {
         ctx.beginPath();
-        ctx.rect(startX, startY, width, height);
-        
-        // Change color of rect, based on whether sensor is working (active)
-        if (bWorking === true) {
-            ctx.fillStyle = "green";
-        } else if (bWorking === false) {
-            ctx.fillStyle = "red";
-        }
-        ctx.fill();
+        ctx.moveTo(me.x1, me.y1);
+        ctx.lineTo(me.x2, me.y2);
         ctx.stroke();
-    };
-
-    function Line(ctx) {   
-        var me = this;
-        
-        this.x1 = 0;
-        this.x2 = 0;
-        this.y1 = 0;
-        this.y2 = 0;
-        
-        this.draw = function() {
-            ctx.beginPath();
-            ctx.moveTo(me.x1, me.y1);
-            ctx.lineTo(me.x2, me.y2);
-            ctx.stroke();
-        }
-    };
+    }
+};
 
 
 
-    // Called each time the mouse moves
-    function updateLine(e) {
-        var r = canvas.getBoundingClientRect(),
-            x = e.clientX - r.left,
-            y = e.clientY - r.top;
-        
-        // LOOK HERE -- seems to be where the drawing gets funky
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        // drawRect(ctx); // OLD
+// Called each time the mouse moves
+function updateLine(e) {
+    var r = canvas.getBoundingClientRect(),
+        x = e.clientX - r.left,
+        y = e.clientY - r.top;
+    
+    // LOOK HERE -- seems to be where the drawing gets funky
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        //TODO: Don't loop through this every frame. Do it only once
-        rectCoords.forEach(function(i) {
-            drawRect(ctx, i.x, i.y, i.bWorking, i.boxColor);
-            console.log('rectCoords forEach bWorking :' + i.bWorking);
-            // console.log('num: ' + i.num);
-            // console.log("x: " + i.x);
-            // console.log("y: " + i.y);
-        }, this);
+    //TODO: Don't loop through this every frame. Do it only once
+    rectCoords.forEach(function(i) {
+        drawRect(ctx, i.x, i.y, i.bWorking);
+        // console.log('num: ' + i.num);
+        // console.log("x: " + i.x);
+        // console.log("y: " + i.y);
+    }, this);
 
-        line.x1 = x;
-        line.y1 = 0;
-        line.x2 = x;
-        line.y2 = canvas.height;
-        line.draw();
-    };
+    line.x1 = x;
+    line.y1 = 0;
+    line.x2 = x;
+    line.y2 = canvas.height;
+    line.draw();
+};
 
 
     // Debug functions
