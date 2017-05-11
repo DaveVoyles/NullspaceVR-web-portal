@@ -2,7 +2,7 @@
 
 The following folder contains two [Azure Functions](https://azure.microsoft.com/en-us/services/functions/).
 
-**NodesUpdate** accepts a JSON Array of nodes and status. It either updates or creates new status based on the node label that is sent to it. In addition it stores the time of the status if changed. 
+**NodeUpdate** accepts a JSON Array of nodes and status. It either updates or creates new status based on the node label that is sent to it. In addition it stores the time of the status if changed. 
 
 *Example Data*
 ```json
@@ -17,7 +17,7 @@ The following folder contains two [Azure Functions](https://azure.microsoft.com/
 	{"nodelabel":343434323,"status":1}	
 ]
 ```
-**NodesStatus** Returns a JSON array of all nodes and their associated status. 
+**NodeStatus** Returns a JSON array of all nodes and their associated status. 
 
 *Example return data*
 ```json
