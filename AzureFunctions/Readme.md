@@ -25,13 +25,13 @@ The following folder contains two [Azure Functions](https://azure.microsoft.com/
   {
     "NodeId": 1,
     "NodeLabel": "123123211",
-    "Status": false,
+    "Status": 0,
     "DateModified": "2017-05-11T11:48:49.36"
   },
   {
     "NodeId": 2,
     "NodeLabel": "452545454",
-    "Status": true,
+    "Status": 1,
     "DateModified": "2017-05-11T11:48:49.36"
   }
 ]
