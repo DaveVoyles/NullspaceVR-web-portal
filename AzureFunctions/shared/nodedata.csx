@@ -14,7 +14,7 @@ public class Node
     
     public int NodeId { get; set; }
     public string NodeLabel  {get; set; }
-    public bool Status { get; set; }
+    public int Status { get; set; }
     public DateTime DateModified { get; set; }
 }
 
