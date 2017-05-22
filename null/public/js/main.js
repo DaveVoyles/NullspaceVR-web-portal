@@ -13,9 +13,21 @@ window.onload = function() {
     var sCode           = "a/YpF2XwTktG0S1tHqVmN1MImuokH5UCiVKwQeeisMmDdOWPheqV6w==";
     var sFuncUrl        = "https://nullspacevr-func.azurewebsites.net/api/NodeStatus?code=";
     var sCompleteUrl    = sFuncUrl + sCode;
+    var oSensorStatus   = {
+            Unknown              : 0,
+            OverCurrent_OverTemp : 1,
+            OverCurrent          : 2,
+            OverTemp             : 3,
+            Nominal              : 4
+    };
 
     var aSensorNodes = [      
-       {"nodelabel":0,"status":0}
+       {
+        "NodeId": 1,
+        "NodeLabel": "123123211",
+        "Status": 0,
+        "DateModified": "2017-05-11T11:48:49.36"
+       }
     ];
 
 
