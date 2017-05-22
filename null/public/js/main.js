@@ -13,6 +13,9 @@ window.onload = function() {
     var sCode           = "a/YpF2XwTktG0S1tHqVmN1MImuokH5UCiVKwQeeisMmDdOWPheqV6w==";
     var sFuncUrl        = "https://nullspacevr-func.azurewebsites.net/api/NodeStatus?code=";
     var sCompleteUrl    = sFuncUrl + sCode;
+    
+    /** Curent status of each node.  
+     * @type {object} */
     var oSensorStatus   = {
             Unknown              : 0,
             OverCurrent_OverTemp : 1,
@@ -21,14 +24,23 @@ window.onload = function() {
             Nominal              : 4
     };
 
-    var aSensorNodes = [      
+    /** Formatting for sensor nodes returned from the Azure Function
+     * @type {object}
+     */
+    var oSensorNode =     
        {
         "NodeId": 1,
         "NodeLabel": "123123211",
         "Status": 0,
         "DateModified": "2017-05-11T11:48:49.36"
-       }
-    ];
+       };
+
+    /** This will be filled with all of the sensors upon the first GET request 
+     * @type {Array.<Object>}
+     */
+       var aSensorNodes = [
+           oSensorNode
+       ]
 
 
 /**
