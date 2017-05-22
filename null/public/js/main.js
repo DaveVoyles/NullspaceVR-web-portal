@@ -1,3 +1,4 @@
+// @ts-check
 "use strict"; 
 window.onload = function() {
     var canvas          = document.getElementById('canvas'),
@@ -8,18 +9,54 @@ window.onload = function() {
         img.onload      = start;  // Start app after image loads
         img.src         = 'img/hardlight-suit.png';
 
-    /**
-     * Called once during init to set up drawing.
-     * Update the debug boxes when user moves the mouse */
+    /**@type {string} - Unique code to connect to Azure Function */
+    var sCode           = "a/YpF2XwTktG0S1tHqVmN1MImuokH5UCiVKwQeeisMmDdOWPheqV6w==";
+    var sFuncUrl        = "https://nullspacevr-func.azurewebsites.net/api/NodeStatus?code=";
+    var sCompleteUrl    = sFuncUrl + sCode;
+
+    var aSensorNodes = [      
+       {"nodelabel":0,"status":0}
+    ];
+
+
+/**
+ * Called once during init to set up drawing.
+ * Update the debug boxes when user moves the mouse */
 function start() {
+    // Draw suit image
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-     drawRect(ctx); //TODO; Can probably remove this
+    // Get latest node status from Azure Function
+    httpGetAsync(sCompleteUrl, console.log("Request made"));
+    // Draw rectangles for each sensor   
+    rectCoords.forEach(function(i) {
+        drawRect(ctx, i.x, i.y, i.bWorking);
+    }, this);
+    // Update nodes when the mouse moves
+    // TODO: Call this every (x) seconds?
     canvas.onmousemove = updateLine;
 };
 
+
+/** Make a request to the Azure Function.
+ * @return {array} - JSON with node status
+ */
+function httpGetAsync(theUrl, callback)
+{
+    var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() { 
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                callback(xmlHttp.responseText);
+                console.log(xmlHttp.responseText)
+        } 
+        xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+        xmlHttp.send(null);
+};
+
+
 /**
 * Starting loc (top-left) when drawing the rectangle.
-* Crearte an object to store all of the rectangles here.
+* Create an object to store all of the rectangles here.
+* @Type {Array}
 */
 var rectCoords = [
     // Torso
@@ -90,7 +127,12 @@ var rectCoords = [
 ];
 
 
-/**Draws debug rectangles and paints based on whether sensor is working or not */
+/**Draws debug rectangles and paints based on whether sensor is working or not
+ * @type {context} ctx - canvas context (2D).
+ * @type {number} startX
+ * @type {number} startY
+ * @type {boolean} bWorking
+ */
 function drawRect(ctx, startX, startY, bWorking){
     var width  = 40;
     var height = 40;
@@ -109,19 +151,20 @@ function drawRect(ctx, startX, startY, bWorking){
 };
 
 
-/** Draws a line to the screen for debig coordinates */
+
+/** Draws a line to the screen for debig coordinates.
+ * @type {context} ctx - canvas context (2D).
+ */
 function Line(ctx) {   
-    var me = this;
-    
-    this.x1 = 0;
-    this.x2 = 0;
-    this.y1 = 0;
+    this.x1 = 0,
+    this.x2 = 0,
+    this.y1 = 0,
     this.y2 = 0;
     
     this.draw = function() {
         ctx.beginPath();
-        ctx.moveTo(me.x1, me.y1);
-        ctx.lineTo(me.x2, me.y2);
+        ctx.moveTo(this.x1, this.y1);
+        ctx.lineTo(this.x2, this.y2);
         ctx.stroke();
     }
 };
@@ -137,12 +180,8 @@ function updateLine(e) {
     // LOOK HERE -- seems to be where the drawing gets funky
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    //TODO: Don't loop through this every frame. Do it only once
     rectCoords.forEach(function(i) {
         drawRect(ctx, i.x, i.y, i.bWorking);
-        // console.log('num: ' + i.num);
-        // console.log("x: " + i.x);
-        // console.log("y: " + i.y);
     }, this);
 
     line.x1 = x;
