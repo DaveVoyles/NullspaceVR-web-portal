@@ -35,6 +35,8 @@ window.onload = function() {
         "DateModified": "2017-05-11T11:48:49.36"
        };
 
+
+
     /** This will be filled with all of the sensors upon the first GET request 
      * @type {Array.<Object>}
      */
@@ -144,9 +146,18 @@ var rectCoords = [
         x: 13,
         y: 422,
     },
-    this.thirteen = {
+    this.fourteen = {
         x: 560,
         y: 386,
+    },
+    // Back
+    this.fifteen = {
+        x: 155,
+        y: 138,
+    },
+    this.sixteen = {
+        x: 470,
+        y: 138,
     }
 ];
 
