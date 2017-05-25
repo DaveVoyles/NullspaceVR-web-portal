@@ -51,20 +51,22 @@ window.onload = function() {
         this.one = {
             x: 400,
             y: 140,
-            nStatus: 0 // Unknown - Appears black?
+            nStatus: 0 // Unknown - Red
         },
         this.two = {
             x: 300,
             y: 138,
-            nStatus: 4 // Nominal - Appears green?
+            nStatus: 4 // Nominal - green?
         },
         this.three = {
             x: 300,
             y: 274,
+            nStatus: 0,
         },
         this.four = {
             x: 400,
             y: 274,
+            nStatus: 4,
         },
         this.five = {
             x: 300,
@@ -163,7 +165,7 @@ window.onload = function() {
     function drawRect(ctx, startX, startY, nStatus){
         var width  = 40;
         var height = 40;
-        if (nStatus == undefined || null || 0){nStatus = 0}
+        // if (nStatus == undefined || null || 0){nStatus = 0}
 
         ctx.beginPath();
         ctx.rect(startX, startY, width, height);
@@ -171,10 +173,9 @@ window.onload = function() {
         // Change rect colors based on status
         if (nStatus === 4) {
             ctx.fillStyle = "green";
-            console.log("green");
-        } else if (nStatus === undefined || null || 0) {
+        // } else if (nStatus === undefined || null || 0) {
+        } else if (nStatus === 0) {
             ctx.fillStyle = "red";
-            console.log("red")
         }
         ctx.fill();
         ctx.stroke();
