@@ -27,40 +27,36 @@ window.onload = function() {
     /** Formatting for sensor nodes returned from the Azure Function
      * @type {object}
      */
-    var oSensorNode =     
-       {
-        "NodeId": 1,
-        "NodeLabel": "123123211",
-        "Status": 0,
+    var oSensorNode = {
+        "NodeId"      : 1,
+        "NodeLabel"   : "123123211",
+        "Status"      : 0,
         "DateModified": "2017-05-11T11:48:49.36"
-       };
-
+    };
 
 
      /** This will be filled with all of the sensors upon the first GET request 
-     * @type {Array.<Object>}
-     */
+      * @type {Array.<Object>}
+      */
        var aSensorNodes = [
            oSensorNode
        ]
 
-
     /**
-    * Starting loc (top-left) when drawing the rectangle.
-    * Create an object to store all of the rectangles here.
-    * @Type {Array}
-    */
+     * Starting loc (top-left) when drawing the rectangle.
+     * Create an object to store all of the rectangles here.
+     * @type {array}  */
     var rectCoords = [
         // Torso
         this.one = {
             x: 400,
             y: 140,
-            nStatus: 0 // Unknown
+            nStatus: 0 // Unknown - Appears black?
         },
         this.two = {
             x: 300,
             y: 138,
-            nStatus: 4 // Nominal
+            nStatus: 4 // Nominal - Appears green?
         },
         this.three = {
             x: 300,
@@ -128,27 +124,24 @@ window.onload = function() {
     ];
 
 
-    /**
-     * Called once during init to set up drawing.
-     * Update the debug boxes when user moves the mouse */
+    /** Called once during init to set up drawing.
+     *  Update the debug boxes when user moves the mouse */
     function start() {
         // Draw suit image
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         // Get latest node status from Azure Function
         httpGetAsync(sCompleteUrl, console.log("Request made to Azure Func"));
-        // Draw rectangles for each sensor   
+        // Draw rectangles for each sensor. Without this, rects will not appear until mouse moves   
         rectCoords.forEach(function(i) {
             drawRect(ctx, i.x, i.y, i.nStatus);
         }, this);
         // Update nodes when the mouse moves
-        // TODO: Call this every (x) seconds?
         canvas.onmousemove = updateLine;
     };
 
 
     /** Make a request to the Azure Function.
-     * @return {array} - JSON with node status
-     */
+     * @return {array} - JSON with node status */
     function httpGetAsync(theUrl, callback)
     {
         var xmlHttp = new XMLHttpRequest();
@@ -166,21 +159,22 @@ window.onload = function() {
      * @type {context} ctx - canvas context (2D).
      * @type {number} startX
      * @type {number} startY
-     * @type {number} nStatus
-     */
+     * @type {number} nStatus */
     function drawRect(ctx, startX, startY, nStatus){
         var width  = 40;
         var height = 40;
-        if (nStatus === undefined || null){nStatus = 0}
+        if (nStatus == undefined || null || 0){nStatus = 0}
 
         ctx.beginPath();
         ctx.rect(startX, startY, width, height);
-
+        console.log(nStatus);
         // Change rect colors based on status
         if (nStatus === 4) {
             ctx.fillStyle = "green";
-        } else if (nStatus === undefined || 0) {
+            console.log("green");
+        } else if (nStatus === undefined || null || 0) {
             ctx.fillStyle = "red";
+            console.log("red")
         }
         ctx.fill();
         ctx.stroke();
@@ -188,8 +182,7 @@ window.onload = function() {
 
 
     /** Draws a line to the screen for debig coordinates.
-     * @type {context} ctx - canvas context (2D).
-     */
+     * @type {context} ctx - canvas context (2D). */
     function Line(ctx) {   
         this.x1 = 0,
         this.x2 = 0,
@@ -205,15 +198,16 @@ window.onload = function() {
     };
 
 
-    // Called each time the mouse moves
+    /** Called each time the mouse moves - redraws background, line, and rectangles
+     * @type {event} e - HTML event */
     function updateLine(e) {
         var r = canvas.getBoundingClientRect(),
             x = e.clientX - r.left,
             y = e.clientY - r.top;
         
-        // LOOK HERE -- seems to be where the drawing gets funky
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
+        // Rectangles
         rectCoords.forEach(function(i) {
             drawRect(ctx, i.x, i.y, i.nStatus);
         }, this);
