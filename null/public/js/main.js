@@ -37,7 +37,7 @@ window.onload = function() {
 
 
 
-    /** This will be filled with all of the sensors upon the first GET request 
+     /** This will be filled with all of the sensors upon the first GET request 
      * @type {Array.<Object>}
      */
        var aSensorNodes = [
@@ -45,7 +45,7 @@ window.onload = function() {
        ]
 
 
-           /**
+    /**
     * Starting loc (top-left) when drawing the rectangle.
     * Create an object to store all of the rectangles here.
     * @Type {Array}
@@ -55,12 +55,12 @@ window.onload = function() {
         this.one = {
             x: 400,
             y: 140,
-            bWorking: false
+            nStatus: 0 // Unknown
         },
         this.two = {
             x: 300,
             y: 138,
-            bWorking: true
+            nStatus: 4 // Nominal
         },
         this.three = {
             x: 300,
@@ -138,7 +138,7 @@ window.onload = function() {
         httpGetAsync(sCompleteUrl, console.log("Request made to Azure Func"));
         // Draw rectangles for each sensor   
         rectCoords.forEach(function(i) {
-            drawRect(ctx, i.x, i.y, i.bWorking);
+            drawRect(ctx, i.x, i.y, i.nStatus);
         }, this);
         // Update nodes when the mouse moves
         // TODO: Call this every (x) seconds?
@@ -166,25 +166,25 @@ window.onload = function() {
      * @type {context} ctx - canvas context (2D).
      * @type {number} startX
      * @type {number} startY
-     * @type {boolean} bWorking
+     * @type {number} nStatus
      */
-    function drawRect(ctx, startX, startY, bWorking){
+    function drawRect(ctx, startX, startY, nStatus){
         var width  = 40;
         var height = 40;
-        if (bWorking == undefined){bWorking = false;}
+        if (nStatus === undefined || null){nStatus = 0}
 
         ctx.beginPath();
         ctx.rect(startX, startY, width, height);
 
-        if (bWorking === true) {
+        // Change rect colors based on status
+        if (nStatus === 4) {
             ctx.fillStyle = "green";
-        } else if (bWorking === false) {
+        } else if (nStatus === undefined || 0) {
             ctx.fillStyle = "red";
         }
         ctx.fill();
         ctx.stroke();
     };
-
 
 
     /** Draws a line to the screen for debig coordinates.
@@ -205,7 +205,6 @@ window.onload = function() {
     };
 
 
-
     // Called each time the mouse moves
     function updateLine(e) {
         var r = canvas.getBoundingClientRect(),
@@ -216,7 +215,7 @@ window.onload = function() {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         rectCoords.forEach(function(i) {
-            drawRect(ctx, i.x, i.y, i.bWorking);
+            drawRect(ctx, i.x, i.y, i.nStatus);
         }, this);
 
         line.x1 = x;
@@ -248,6 +247,6 @@ window.onload = function() {
             x: evt.clientX - rect.left,
             y: evt.clientY - rect.top
         }
-    }
+    };
 
 }
