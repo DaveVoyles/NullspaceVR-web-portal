@@ -151,6 +151,7 @@ window.onload = function() {
                 if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
                     callback(xmlHttp.responseText);
                     console.log(xmlHttp.responseText)
+                    //TODO: Store returned items in a variable. Return that var.
             } 
             xmlHttp.open("GET", theUrl, true); // true for asynchronous 
             xmlHttp.send(null);
