@@ -1,5 +1,5 @@
 // @ts-check
-"use strict"; 
+// "use strict";
 window.onload = function() {
     var canvas          = document.getElementById('canvas'),
         ctx             = canvas.getContext('2d'),
@@ -42,52 +42,120 @@ window.onload = function() {
            oSensorNode
        ]
 
+
+    // var myObj = {};
+
+    // myObj.prototype.myCords = [];
+
+    // myObj.prototype.myCords.nodeCord =  function(locX, locY){
+    //         this.x = locX;
+    //         this.y = locY;
+    //    };
+   
+    //    myObj.myCords.nodeCord.push()
+
+    //    var node0 = new nodeCord(400,200);
+    //    myCords.push(node0);
+    //    myCords.push(nodeCord(500,300));
+
+
+    /** Stores hardcoded values of X/Y coords for status rectangles */
+    var myCords = [];
+
+    function createCords() {
+       
+    /** X/Y locations for rect overlays*/
+    var nodeCord = function(locX, locY){
+        this.x = locX;
+        this.y = locY;
+    };
+
+    // Create hardcoded cords for each rect, and add them to array
+    var node0 = new nodeCord(400, 140);
+    myCords.push(node0);
+    var node1 = new nodeCord(300,138);
+    myCords.push(node1);        
+    var node2 = new nodeCord(300, 274);
+    myCords.push(node2);        
+    var node3 = new nodeCord(300, 138);
+    myCords.push(node3);      
+    var node4 = new nodeCord(300, 338);
+    myCords.push(node4);        
+    var node5 = new nodeCord(400, 338);
+    myCords.push(node5);    
+    var node6 = new nodeCord(300, 418);
+    myCords.push(node6);   
+    var node7 = new nodeCord(400, 342);
+    myCords.push(node7);      
+    var node8 = new nodeCord(400, 418);
+    myCords.push(node8);   
+    var node9 = new nodeCord(153, 30);
+    myCords.push(node9);   
+    var node10 = new nodeCord(400, 30);
+    myCords.push(node10);   
+    var node11 = new nodeCord(36, 179);
+    myCords.push(node11);   
+    var node12 = new nodeCord(520, 179);
+    myCords.push(node12);   
+    var node13 = new nodeCord(13, 422);
+    myCords.push(node13);  
+    var node14 = new nodeCord(560, 386);
+    myCords.push(node14);   
+    var node15 = new nodeCord(155, 138);
+    myCords.push(node15);  
+    var node16 = new nodeCord(470, 138);
+    myCords.push(node16);          
+}
+
+
+
+
     /**
      * Starting loc (top-left) when drawing the rectangle.
      * Create an object to store all of the rectangles here.
      * @type {array}  */
     var rectCoords = [
         // Torso
-        this.one = {
+        this.zero = {
             x: 400,
             y: 140,
             nStatus: 0 // Unknown - Red
         },
-        this.two = {
+        this.one = {
             x: 300,
             y: 138,
-            nStatus: 4 // Nominal - green?
+            nStatus: 4 // Nominal - Green
         },
-        this.three = {
+        this.two = {
             x: 300,
             y: 274,
             nStatus: 0,
         },
-        this.four = {
+        this.three = {
             x: 400,
             y: 274,
             nStatus: 4,
         },
-        this.five = {
+        this.four = {
             x: 300,
             y: 338,
         },
-        this.six = {
+        this.five = {
             x: 400,
             y: 342,
         },
-        this.seven = {
+        this.six = {
             x: 300,
             y: 418,
         },
-        this.eight = {
+        this.seven = {
             x: 400,
             y: 342,
         },
-        this.eight = {
-            x: 400,
-            y: 418,
-        },
+        // this.eight = {
+        //     x: 400,
+        //     y: 418,
+        // },
         // Shoulders
         this.nine = {
             x: 153,
@@ -129,16 +197,28 @@ window.onload = function() {
     /** Called once during init to set up drawing.
      *  Update the debug boxes when user moves the mouse */
     function start() {
+        // populate coordinates
+        createCords();
         // Draw suit image
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         // Get latest node status from Azure Function
         httpGetAsync(sCompleteUrl, console.log("Request made to Azure Func"));
         // Draw rectangles for each sensor. Without this, rects will not appear until mouse moves   
-        rectCoords.forEach(function(i) {
-            drawRect(ctx, i.x, i.y, i.nStatus);
-        }, this);
+        loopThroughCoords();
         // Update nodes when the mouse moves
         canvas.onmousemove = updateLine;
+    };
+
+
+    function loopThroughCoords () {
+        var count = 0;
+        rectCoords.forEach(function(i) {
+            // drawRect(ctx, i.x, i.y, i.nStatus);
+            // drawRect(ctx, myCords[i.NodeId].x, myCords[i.NodeId].y, i.nStatus);
+            drawRect(ctx, myCords[count].x, myCords[count].y, i.nStatus);
+            console.log("my coords: " + myCords[count].x + "-" + myCords[count].y);
+            count++;
+        }, this);
     };
 
 
@@ -149,9 +229,9 @@ window.onload = function() {
         var xmlHttp = new XMLHttpRequest();
             xmlHttp.onreadystatechange = function() { 
                 if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-                    callback(xmlHttp.responseText);
-                    console.log(xmlHttp.responseText)
-                    //TODO: Store returned items in a variable. Return that var.
+                if (callback){ callback(xmlHttp.responseText); }
+                console.log(xmlHttp.response);
+                //TODO: Store returned items in a variable. Return that var.
             } 
             xmlHttp.open("GET", theUrl, true); // true for asynchronous 
             xmlHttp.send(null);
@@ -160,9 +240,9 @@ window.onload = function() {
 
     /**Draws debug rectangles and paints based on whether sensor is working or not
      * @type {context} ctx - canvas context (2D).
-     * @type {number} startX
-     * @type {number} startY
-     * @type {number} nStatus */
+     * @type {number} startX - Where should the top-left corner begin?
+     * @type {number} startY - Where should the top-left corner begin?
+     * @type {number} nStatus - Look at oSensorStatus for list of possible number values */
     function drawRect(ctx, startX, startY, nStatus){
         var width  = 40;
         var height = 40;
@@ -210,9 +290,10 @@ window.onload = function() {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         // Rectangles
-        rectCoords.forEach(function(i) {
-            drawRect(ctx, i.x, i.y, i.nStatus);
-        }, this);
+        // rectCoords.forEach(function(i) {
+        //     drawRect(ctx, i.x, i.y, i.nStatus);
+        // }, this);
+        loopThroughCoords();
 
         line.x1 = x;
         line.y1 = 0;
