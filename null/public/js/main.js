@@ -24,187 +24,37 @@ window.onload = function() {
             Nominal              : 4
     };
 
-    /** Formatting for sensor nodes returned from the Azure Function
-     * @type {object}
-     */
-    var oSensorNode = {
-        "NodeId"      : 1,
-        "NodeLabel"   : "123123211",
-        "Status"      : 0,
-        "DateModified": "2017-05-11T11:48:49.36"
-    };
+    // used for storing live Node Results from function
 
+    var nodeStatuses = [];
 
-     /** This will be filled with all of the sensors upon the first GET request 
-      * @type {Array.<Object>}
-      */
-       var aSensorNodes = [
-           oSensorNode
-       ]
+    function setNodeStatuses(response) {
 
+        nodeStatuses = response;
 
-    // var myObj = {};
-
-    // myObj.prototype.myCords = [];
-
-    // myObj.prototype.myCords.nodeCord =  function(locX, locY){
-    //         this.x = locX;
-    //         this.y = locY;
-    //    };
-   
-    //    myObj.myCords.nodeCord.push()
-
-    //    var node0 = new nodeCord(400,200);
-    //    myCords.push(node0);
-    //    myCords.push(nodeCord(500,300));
-
-
-    /** Stores hardcoded values of X/Y coords for status rectangles */
-    var myCords = [];
-
-    function createCords() {
-       
-    /** X/Y locations for rect overlays*/
-    var nodeCord = function(locX, locY){
-        this.x = locX;
-        this.y = locY;
-    };
-
-    // Create hardcoded cords for each rect, and add them to array
-    var node0 = new nodeCord(400, 140);
-    myCords.push(node0);
-    var node1 = new nodeCord(300,138);
-    myCords.push(node1);        
-    var node2 = new nodeCord(300, 274);
-    myCords.push(node2);        
-    var node3 = new nodeCord(300, 138);
-    myCords.push(node3);      
-    var node4 = new nodeCord(300, 338);
-    myCords.push(node4);        
-    var node5 = new nodeCord(400, 338);
-    myCords.push(node5);    
-    var node6 = new nodeCord(300, 418);
-    myCords.push(node6);   
-    var node7 = new nodeCord(400, 342);
-    myCords.push(node7);      
-    var node8 = new nodeCord(400, 418);
-    myCords.push(node8);   
-    var node9 = new nodeCord(153, 30);
-    myCords.push(node9);   
-    var node10 = new nodeCord(400, 30);
-    myCords.push(node10);   
-    var node11 = new nodeCord(36, 179);
-    myCords.push(node11);   
-    var node12 = new nodeCord(520, 179);
-    myCords.push(node12);   
-    var node13 = new nodeCord(13, 422);
-    myCords.push(node13);  
-    var node14 = new nodeCord(560, 386);
-    myCords.push(node14);   
-    var node15 = new nodeCord(155, 138);
-    myCords.push(node15);  
-    var node16 = new nodeCord(470, 138);
-    myCords.push(node16);          
-}
-
-
-
-
-    /**
-     * Starting loc (top-left) when drawing the rectangle.
-     * Create an object to store all of the rectangles here.
-     * @type {array}  */
-    var rectCoords = [
-        // Torso
-        this.zero = {
-            x: 400,
-            y: 140,
-            nStatus: 0 // Unknown - Red
-        },
-        this.one = {
-            x: 300,
-            y: 138,
-            nStatus: 4 // Nominal - Green
-        },
-        this.two = {
-            x: 300,
-            y: 274,
-            nStatus: 0,
-        },
-        this.three = {
-            x: 400,
-            y: 274,
-            nStatus: 4,
-        },
-        this.four = {
-            x: 300,
-            y: 338,
-        },
-        this.five = {
-            x: 400,
-            y: 342,
-        },
-        this.six = {
-            x: 300,
-            y: 418,
-        },
-        this.seven = {
-            x: 400,
-            y: 342,
-        },
-        // this.eight = {
-        //     x: 400,
-        //     y: 418,
-        // },
-        // Shoulders
-        this.nine = {
-            x: 153,
-            y: 30,
-        },
-        this.ten = {
-            x: 400,
-            y: 30,
-        },
-        // Arms
-        this.eleven = {
-            x: 36,
-            y: 179,
-        },
-        this.twelve = {
-            x: 520,
-            y: 179,
-        },
-        this.thirteen = {
-            x: 13,
-            y: 422,
-        },
-        this.fourteen = {
-            x: 560,
-            y: 386,
-        },
-        // Back
-        this.fifteen = {
-            x: 155,
-            y: 138,
-        },
-        this.sixteen = {
-            x: 470,
-            y: 138,
+        //loop through to make sure we have it
+        for(var i = 0; i < nodeStatuses.length; i++){
+            console.log("NodeId: " + nodeStatuses[i].NodeId + 
+            " | NodeLabel: " + nodeStatuses[i].NodeLabel + 
+            " | Status: " + nodeStatuses[i].Status +
+            " | LocX: " + nodeStatuses[i].LocX +
+            " | LocY: " + nodeStatuses[i].LocY);
         }
-    ];
 
+    }
 
     /** Called once during init to set up drawing.
      *  Update the debug boxes when user moves the mouse */
     function start() {
-        // populate coordinates
-        createCords();
         // Draw suit image
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         // Get latest node status from Azure Function
-        httpGetAsync(sCompleteUrl, console.log("Request made to Azure Func"));
-        // Draw rectangles for each sensor. Without this, rects will not appear until mouse moves   
-        loopThroughCoords();
+        httpGetAsync(sCompleteUrl, function(data){
+            //store result in global                        
+            setNodeStatuses(JSON.parse(data));  
+            // Draw rectangles for each sensor. Without this, rects will not appear until mouse moves   
+            loopThroughCoords();
+        });
         // Update nodes when the mouse moves
         canvas.onmousemove = updateLine;
     };
@@ -212,11 +62,19 @@ window.onload = function() {
 
     function loopThroughCoords () {
         var count = 0;
-        rectCoords.forEach(function(i) {
-            // drawRect(ctx, i.x, i.y, i.nStatus);
-            // drawRect(ctx, myCords[i.NodeId].x, myCords[i.NodeId].y, i.nStatus);
-            drawRect(ctx, myCords[count].x, myCords[count].y, i.nStatus);
-            console.log("my coords: " + myCords[count].x + "-" + myCords[count].y);
+        console.log("HELLO --->" + nodeStatuses.length);
+        nodeStatuses.forEach(function(i) {
+            drawRect(
+                ctx, 
+                nodeStatuses[count].LocX, 
+                nodeStatuses[count].LocY, 
+                nodeStatuses[count].Status
+            );
+            console.log("NodeId: " + nodeStatuses[count].NodeId + 
+            " | NodeLabel: " + nodeStatuses[count].NodeLabel + 
+            " | Status: " + nodeStatuses[count].Status +
+            " | LocX: " + nodeStatuses[count].LocX +
+            " | LocY: " + nodeStatuses[count].LocY);
             count++;
         }, this);
     };
@@ -229,9 +87,16 @@ window.onload = function() {
         var xmlHttp = new XMLHttpRequest();
             xmlHttp.onreadystatechange = function() { 
                 if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-                if (callback){ callback(xmlHttp.responseText); }
-                console.log(xmlHttp.response);
-                //TODO: Store returned items in a variable. Return that var.
+                {
+                    //store response
+                    var response = xmlHttp.responseText;
+
+                    if (callback) {
+                        callback(response)
+                    }              
+
+                }
+                
             } 
             xmlHttp.open("GET", theUrl, true); // true for asynchronous 
             xmlHttp.send(null);
@@ -252,7 +117,7 @@ window.onload = function() {
         ctx.rect(startX, startY, width, height);
         console.log(nStatus);
         // Change rect colors based on status
-        if (nStatus === 4) {
+        if (nStatus === 1) {
             ctx.fillStyle = "green";
         // } else if (nStatus === undefined || null || 0) {
         } else if (nStatus === 0) {
