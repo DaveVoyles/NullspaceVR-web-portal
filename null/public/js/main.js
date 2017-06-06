@@ -1,5 +1,8 @@
+/* Prepared by Joe Raio    [@JoeScars  ]  (GitHub.com/JoeScars  )
+ * &           Dave Voyles [@DaveVoyles]  (GitHub.com/DaveVoyles)
+ * June 2017 */
+
 // @ts-check
-// "use strict";
 window.onload = function() {
     var canvas          = document.getElementById('canvas'),
         ctx             = canvas.getContext('2d'),
@@ -13,32 +16,36 @@ window.onload = function() {
     var sCode           = "a/YpF2XwTktG0S1tHqVmN1MImuokH5UCiVKwQeeisMmDdOWPheqV6w==";
     var sFuncUrl        = "https://nullspacevr-func.azurewebsites.net/api/NodeStatus?code=";
     var sCompleteUrl    = sFuncUrl + sCode;
+    var bDebug          = true;
     
     /** Curent status of each node.  
      * @type {object} */
     var oSensorStatus   = {
             Unknown              : 0,
-            OverCurrent_OverTemp : 1,
+            OverCurrent_OverTemp : 1,   // Red
             OverCurrent          : 2,
             OverTemp             : 3,
-            Nominal              : 4
+            Nominal              : 4    // Green
     };
 
-    // used for storing live Node Results from function
-
+    /** Store the live node results from Azure Function 
+     * @type {array}  */
     var nodeStatuses = [];
 
-    function setNodeStatuses(response) {
 
+    /** Stores response from Azure function and [optionally] logs results */
+    function setNodeStatuses(response) {
         nodeStatuses = response;
 
-        //loop through to make sure we have it
-        for(var i = 0; i < nodeStatuses.length; i++){
-            console.log("NodeId: " + nodeStatuses[i].NodeId + 
-            " | NodeLabel: " + nodeStatuses[i].NodeLabel + 
-            " | Status: " + nodeStatuses[i].Status +
-            " | LocX: " + nodeStatuses[i].LocX +
-            " | LocY: " + nodeStatuses[i].LocY);
+        //Logging for Debug mode
+        if (bDebug === true){
+            for(var i = 0; i < nodeStatuses.length; i++){
+                console.log("NodeId: " + nodeStatuses[i].NodeId    + 
+                " | NodeLabel      : " + nodeStatuses[i].NodeLabel + 
+                " | Status         : " + nodeStatuses[i].Status    +
+                " | LocX           : " + nodeStatuses[i].LocX      +
+                " | LocY           : " + nodeStatuses[i].LocY);
+            }
         }
 
     }
@@ -52,7 +59,6 @@ window.onload = function() {
         httpGetAsync(sCompleteUrl, function(data){
             //store result in global                        
             setNodeStatuses(JSON.parse(data));  
-            // Draw rectangles for each sensor. Without this, rects will not appear until mouse moves   
             loopThroughCoords();
         });
         // Update nodes when the mouse moves
@@ -60,9 +66,14 @@ window.onload = function() {
     };
 
 
+    /**
+     * Loops through individual node statuses returned from an Azure function &
+     * displays colored rectangles to indicate status. 
+     */
     function loopThroughCoords () {
         var count = 0;
-        console.log("HELLO --->" + nodeStatuses.length);
+        if (bDebug === true){ console.log("# of nodes from Function: "+ nodeStatuses.length); };
+
         nodeStatuses.forEach(function(i) {
             drawRect(
                 ctx, 
@@ -70,11 +81,15 @@ window.onload = function() {
                 nodeStatuses[count].LocY, 
                 nodeStatuses[count].Status
             );
-            console.log("NodeId: " + nodeStatuses[count].NodeId + 
-            " | NodeLabel: " + nodeStatuses[count].NodeLabel + 
-            " | Status: " + nodeStatuses[count].Status +
-            " | LocX: " + nodeStatuses[count].LocX +
-            " | LocY: " + nodeStatuses[count].LocY);
+
+            // Logging for Debug mode
+            if (bDebug ===true){
+                console.log("NodeId: " + nodeStatuses[count].NodeId    + 
+                " | NodeLabel      : " + nodeStatuses[count].NodeLabel + 
+                " | Status         : " + nodeStatuses[count].Status    +
+                " | LocX           : " + nodeStatuses[count].LocX      +
+                " | LocY           : " + nodeStatuses[count].LocY);
+            }
             count++;
         }, this);
     };
@@ -82,10 +97,10 @@ window.onload = function() {
 
     /** Make a request to the Azure Function.
      * @return {array} - JSON with node status */
-    function httpGetAsync(theUrl, callback)
-    {
+    function httpGetAsync(theUrl, callback) {
         var xmlHttp = new XMLHttpRequest();
             xmlHttp.onreadystatechange = function() { 
+                // Ready to receive response and 200 (success)
                 if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
                 {
                     //store response
@@ -94,9 +109,7 @@ window.onload = function() {
                     if (callback) {
                         callback(response)
                     }              
-
                 }
-                
             } 
             xmlHttp.open("GET", theUrl, true); // true for asynchronous 
             xmlHttp.send(null);
@@ -108,14 +121,16 @@ window.onload = function() {
      * @type {number} startX - Where should the top-left corner begin?
      * @type {number} startY - Where should the top-left corner begin?
      * @type {number} nStatus - Look at oSensorStatus for list of possible number values */
-    function drawRect(ctx, startX, startY, nStatus){
+    function drawRect(ctx, startX, startY, nStatus) {
         var width  = 40;
         var height = 40;
-        // if (nStatus == undefined || null || 0){nStatus = 0}
 
+        // if (nStatus == undefined || null || 0){nStatus = 0}
         ctx.beginPath();
         ctx.rect(startX, startY, width, height);
-        console.log(nStatus);
+        if (bDebug === true) { console.log(nStatus); };
+
+        // TODO: Define other rect colors here, based on status
         // Change rect colors based on status
         if (nStatus === 1) {
             ctx.fillStyle = "green";
@@ -153,11 +168,6 @@ window.onload = function() {
             y = e.clientY - r.top;
         
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        // Rectangles
-        // rectCoords.forEach(function(i) {
-        //     drawRect(ctx, i.x, i.y, i.nStatus);
-        // }, this);
         loopThroughCoords();
 
         line.x1 = x;
@@ -169,13 +179,16 @@ window.onload = function() {
 
 
     // Debug functions
-    /*****************/
+    /*********************************************************/
+
+    /** Draw mouse cursor coords. Useful when trying to determine where to start drawing rects. */
     canvas.addEventListener('mousemove', function(evt) {
         var mousePos = getMousePos(canvas, evt);
         var message  = 'X: ' + Number(mousePos.x.toFixed(0)) + ', Y: ' +Number(mousePos.y.toFixed(0));
         writeMessage(canvas, message);
     }, false);
 
+    /** Draws mtext for mouse coords */
     function writeMessage(canvas, message) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.font      = '18pt Calibri';
@@ -183,6 +196,7 @@ window.onload = function() {
         ctx.fillText(message, 10, 25);
     };
 
+    /** Returns coords for mouse X/Y display */
     function getMousePos(canvas, evt) {
         var rect = canvas.getBoundingClientRect();
         return {
@@ -191,4 +205,19 @@ window.onload = function() {
         }
     };
 
+    /** Toggles console logging by pressing debug button */
+    function toggleDebugMode () {
+        var debugBtn = document.getElementById('debug-btn');
+        debugBtn.onclick = function () {
+            console.log('debug mode: ' + bDebug);
+
+            if (bDebug === true) {
+            debugBtn.innerText = "Debug Mode On";
+            } else {
+            debugBtn.innerText = "Debug Mode Off";
+            }
+            bDebug = !bDebug;
+        };
+    };
+    toggleDebugMode();
 }
