@@ -9,7 +9,7 @@ Real portal to view real-time diagnostics on the suit
 * Azure Functions to collect haptic VR suit data, and draw it to interactive web display
 * NodeJS website utilizing HTML5 canvas to overlay green/red zones to indicate which parts of the suit are working
 
-![overview](https://github.com/DaveVoyles/NullspaceVR-web-portal/blob/master/null/public/img/readme-img.jpg)
+![overview](https://github.com/DaveVoyles/NullspaceVR-web-portal/blob/master/null/public/img/README-img.jpg)
 
 ## Instructions
 Navigate to */null* directory. In the console, type:
