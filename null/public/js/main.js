@@ -47,7 +47,6 @@ window.onload = function() {
                 " | LocY           : " + nodeStatuses[i].LocY);
             }
         }
-
     }
 
     /** Called once during init to set up drawing.
@@ -209,15 +208,33 @@ window.onload = function() {
     function toggleDebugMode () {
         var debugBtn = document.getElementById('debug-btn');
         debugBtn.onclick = function () {
-            console.log('debug mode: ' + bDebug);
-
-            if (bDebug === true) {
-            debugBtn.innerText = "Debug Mode On";
-            } else {
-            debugBtn.innerText = "Debug Mode Off";
-            }
             bDebug = !bDebug;
+            
+            console.log('debug mode: ' + bDebug);
+            if (bDebug === true) {
+            debugBtn.innerText = "Debug Mode is: ON";
+            } else {
+            debugBtn.innerText = "Debug Mode is: OFF";
+            }
         };
     };
     toggleDebugMode();
+
+
+    /** Pulls latest data from Azure function 
+     * TODO: Consider turning this into a functon that is called every (x) seconds */
+    function refresh () {
+        var refreshBtn = document.getElementById('refresh-btn');
+        refreshBtn.onclick = function () {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            // Get latest node status from Azure Function
+            httpGetAsync(sCompleteUrl, function(data){
+                //store result in global                        
+                setNodeStatuses(JSON.parse(data));  
+                loopThroughCoords();
+            });
+        }
+    };
+    refresh();
+
 }
