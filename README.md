@@ -22,6 +22,7 @@ nodemon app
 Navigate to *localhost:3000*
 
 This will spin up *node monitor* which looks for any changes to your code base and updates the page immediately. 
+
 ----------
 
 ## Change Log
