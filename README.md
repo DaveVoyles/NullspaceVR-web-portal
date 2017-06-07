@@ -16,12 +16,16 @@ Navigate to */null* directory. In the console, type:
 
 ```
 npm install
+npm install -g nodemon
 nodemon app
 ```
 
+This will spin up *node monitor* which looks for any changes to your code base and updates the page immediately. 
 ----------
 
 ## Change Log
+### v0.0.6
+Final stages before deployment. Debug enabled.
 ### v0.0.5
 Initial build of the app
 
